@@ -9,34 +9,42 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'restore'
-      projects: '*/*.csproj'
-      feedsToUse: 'select'
-    displayName: 'Restore Nuget Packages'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'build'
-      projects: '*/*.csproj'
-      arguments: '--no-restore'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'test'
-      projects: '*/*.csproj'
-      arguments: '--no-restore'
-    displayName: 'Unit Testing'
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'publish'
-      publishWebProjects: false
-      projects: '*/Miniblog.Core.csproj'
-      arguments: '-o $(Build.ArtifactStagingDirectory)'
-      zipAfterPublish: false
-    displayName: 'Publish-Package'
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Artifacts
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: myownapp
+
+stages:
+  - stage: Build
+    displayName: Build 
+    jobs:
+      - job: Build
+        pool: 
+          vmImage: ubuntu-latest
+        steps:
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'restore'
+            projects: '*/*.csproj'
+            feedsToUse: 'select'
+          displayName: 'Restore Nuget Packages'
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'build'
+            projects: '*/*.csproj'
+            arguments: '--no-restore'
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'test'
+            projects: '*/*.csproj'
+            arguments: '--no-restore'
+          displayName: 'Unit Testing'
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'publish'
+            publishWebProjects: false
+            projects: '*/Miniblog.Core.csproj'
+            arguments: '-o $(Build.ArtifactStagingDirectory)'
+            zipAfterPublish: false
+          displayName: 'Publish-Package'
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Artifacts
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: myownapp
