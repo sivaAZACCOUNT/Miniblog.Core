@@ -1,0 +1,37 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+variables:
+  buildConfiguration: 'Release'
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'restore'
+      projects: '*/*.csproj'
+      feedsToUse: 'select'
+    displayName: 'Restore Nuget Packages'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '*/*.csproj'
+      arguments: '--no-restore'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: '*/*.csproj'
+      arguments: '--no-restore'
+    displayName: 'Unit Testing'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: '*/Miniblog.Core.csproj'
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+      zipAfterPublish: false
+    displayName: 'Publish-Package'
