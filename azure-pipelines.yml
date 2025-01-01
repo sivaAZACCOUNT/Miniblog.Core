@@ -32,6 +32,11 @@ steps:
       command: 'publish'
       publishWebProjects: false
       projects: '*/Miniblog.Core.csproj'
-      arguments: '--configuration $(buildConfiguration) --no-restore'
+      arguments: '-o $(Build.ArtifactStagingDirectory)'
       zipAfterPublish: false
     displayName: 'Publish-Package'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifacts
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: myownapp
